@@ -1,0 +1,28 @@
+# LOCAL CLUSTER
+apiVersion: v1
+kind: Service
+metadata:
+  name: vote
+spec:
+  type: ClusterIP
+  selector:
+    app: vote
+  ports:
+  - protocol: TCP
+    port: 80
+    targetPort: 80
+
+---
+# PUBLIC FACING
+#apiVersion: v1
+#kind: Service
+#metadata:
+#  name: vote
+#spec:
+#  type: LoadBalancer
+#  selector:
+#    app: vote
+#  ports:
+#  - protocol: TCP
+#    port: 80
+#    targetPort: 80

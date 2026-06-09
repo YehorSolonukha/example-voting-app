@@ -1,0 +1,30 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: vote-deployment
+  labels:
+    app: vote
+spec:
+  replicas: 2   # Wartość początkowa — docelowo zarządzana przez HPA
+  selector:
+    matchLabels:
+      app: vote
+  template:
+    metadata:
+      labels:
+        app: vote
+    spec:
+      containers:
+      - name: vote
+        image: yehor542/vote:latest
+        imagePullPolicy: Always       # Wymusza pobieranie przy rolling restartach
+        ports:
+        - containerPort: 80
+        # Limity zasobów — wymagane przez HPA do obliczenia procentowego zużycia CPU
+        resources:
+          requests:
+            cpu: 100m    # Bazowe zapotrzebowanie: 0.1 rdzenia CPU
+            memory: 128Mi
+          limits:
+            cpu: 300m    # Maksymalnie: 0.3 rdzenia CPU
+            memory: 256Mi

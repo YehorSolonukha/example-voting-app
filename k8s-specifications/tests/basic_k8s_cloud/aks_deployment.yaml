@@ -1,0 +1,28 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: voting-app-deployment
+  labels:
+    app: voting-app
+spec:
+  replicas: 2 # Dwie repliki dla zapewnienia wysokiej dostępności
+  selector:
+    matchLabels:
+      app: voting-app
+  template:
+    metadata:
+      labels:
+        app: voting-app
+    spec:
+      containers:
+      - name: voting-app
+        image: yehor542/voting_app:latest # Używamy Twojego obrazu z Docker Hub
+        ports:
+        - containerPort: 80 # Port, na którym aplikacja Flask nasłuchuje wewnątrz kontenera
+        resources:
+          requests:
+            cpu: "100m"
+            memory: "128Mi"
+          limits:
+            cpu: "250m"
+            memory: "256Mi"

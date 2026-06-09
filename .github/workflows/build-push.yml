@@ -1,0 +1,65 @@
+name: Build and Push Docker Images
+
+# Automatyczne budowanie obrazów po każdym push do gałęzi main
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - 'vote/**'
+      - 'result/**'
+      - 'worker/**'
+      - '.github/workflows/build-push.yml'
+
+jobs:
+  build:
+    name: Build ${{ matrix.service }}
+    runs-on: ubuntu-latest
+
+    # Strategia macierzowa — buduje vote, result i worker równolegle
+    strategy:
+      matrix:
+        include:
+          - service: vote
+            context: ./vote
+            image: yehor542/vote
+          - service: result
+            context: ./result
+            image: yehor542/result
+          - service: worker
+            context: ./worker
+            image: yehor542/worker
+
+    steps:
+      # 1. Pobranie kodu źródłowego z repozytorium
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      # 2. Konfiguracja QEMU — emulator wymagany do budowania obrazów ARM64 na hoście AMD64
+      - name: Set up QEMU
+        uses: docker/setup-qemu-action@v3
+
+      # 3. Konfiguracja Docker Buildx — zaawansowany silnik budowania z obsługą wielu platform
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      # 4. Uwierzytelnienie w rejestrze Docker Hub za pomocą sekretów repozytorium
+      - name: Login to Docker Hub
+        uses: docker/login-action@v3
+        with:
+          username: ${{ secrets.DOCKER_USERNAME }}
+          password: ${{ secrets.DOCKER_PASSWORD }}
+
+      # 5. Budowanie wieloplatformowego obrazu i publikacja do Docker Hub
+      - name: Build and push ${{ matrix.service }}
+        uses: docker/build-push-action@v6
+        with:
+          context: ${{ matrix.context }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ matrix.image }}:latest
+            ${{ matrix.image }}:${{ github.sha }}
+          # Pamięć cache warstw — przyspiesza kolejne budowania
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
