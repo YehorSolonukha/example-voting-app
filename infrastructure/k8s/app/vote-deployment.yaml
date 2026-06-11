@@ -5,7 +5,7 @@ metadata:
   labels:
     app: vote
 spec:
-  replicas: 2   # Wartość początkowa — docelowo zarządzana przez HPA
+  replicas: 2
   selector:
     matchLabels:
       app: vote
@@ -17,14 +17,13 @@ spec:
       containers:
       - name: vote
         image: yehor542/vote:latest
-        imagePullPolicy: Always       # Wymusza pobieranie przy rolling restartach
+        imagePullPolicy: Always
         ports:
         - containerPort: 80
-        # Limity zasobów — wymagane przez HPA do obliczenia procentowego zużycia CPU
         resources:
           requests:
-            cpu: 100m    # Bazowe zapotrzebowanie: 0.1 rdzenia CPU
+            cpu: 100m
             memory: 128Mi
           limits:
-            cpu: 300m    # Maksymalnie: 0.3 rdzenia CPU
+            cpu: 300m
             memory: 256Mi

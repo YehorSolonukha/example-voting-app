@@ -1,8 +1,3 @@
-# Konfiguracja HPA (Horizontal Pod Autoscaler) dla usługi Vote
-# HPA automatycznie skaluje liczbę Podów w oparciu o zużycie zasobów CPU.
-# Gdy średnie obciążenie CPU przekroczy 50%, Kubernetes utworzy nowe repliki.
-# Gdy obciążenie spadnie, nadmiarowe repliki zostaną usunięte.
-
 apiVersion: autoscaling/v2
 kind: HorizontalPodAutoscaler
 metadata:

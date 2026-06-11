@@ -1,24 +1,13 @@
-# Niestandardowe wartości konfiguracyjne dla Helm chart kube-prometheus-stack.
-# Plik ten nadpisuje ustawienia domyślne, dostosowując stos monitoringu
-# do wymagań klastra AKS na potrzeby pracy licencjackiej.
-
-# Konfiguracja Grafany
 grafana:
-  # Domyślne dane logowania administratora
   adminUser: admin
   adminPassword: prom-operator
 
-  # Udostępnienie Grafany przez Service typu LoadBalancer
-  # Pozwala na dostęp do dashboardów z zewnątrz klastra
   service:
     type: LoadBalancer
 
-# Konfiguracja Prometheusa
 prometheus:
   prometheusSpec:
-    # Ograniczenie retencji danych do 3 dni — wystarczające do demonstracji
     retention: 3d
-    # Limity zasobów — zapobiega nadmiernemu zużyciu pamięci na węzłach AKS
     resources:
       requests:
         cpu: 200m
@@ -27,6 +16,5 @@ prometheus:
         cpu: 500m
         memory: 1Gi
 
-# Wyłączenie AlertManagera — niepotrzebny do celów demonstracyjnych
 alertmanager:
   enabled: false
