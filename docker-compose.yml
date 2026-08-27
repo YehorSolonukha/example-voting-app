@@ -1,6 +1,9 @@
 services:
+
+  # ─── Application services ──────────────────────────────────────────────────
+
   vote:
-    build: 
+    build:
       context: ./vote
     depends_on:
       redis:
@@ -12,11 +15,11 @@ services:
       - back-tier
 
   result:
-    build: 
+    build:
       context: ./result
     depends_on:
       db:
-        condition: service_healthy 
+        condition: service_healthy
     ports:
       - "8081:80"
     networks:
@@ -28,11 +31,13 @@ services:
       context: ./worker
     depends_on:
       redis:
-        condition: service_healthy 
+        condition: service_healthy
       db:
-        condition: service_healthy 
+        condition: service_healthy
     networks:
       - back-tier
+
+  # ─── Infrastructure ────────────────────────────────────────────────────────
 
   redis:
     image: redis:alpine
@@ -58,8 +63,40 @@ services:
     networks:
       - back-tier
 
+  waf-db:
+    image: postgres:15-alpine
+    environment:
+      POSTGRES_USER: "postgres"
+      POSTGRES_PASSWORD: "super_secret_password_here"
+      POSTGRES_DB: "waf_logs"
+    volumes:
+      - "waf-db-data:/var/lib/postgresql/data"
+      # This mounts our schema into the exact folder Postgres checks on first boot
+      - "./gateway/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+    networks:
+      - front-tier
+
+  waf-redis:
+    image: redis:alpine
+    networks:
+      - front-tier
+
+  gateway:
+    build: ./gateway/
+    ports:
+      - "9090:9090"
+    depends_on:
+      - vote
+      - waf-db
+      - waf-redis
+    networks:
+      - front-tier
+
+
 volumes:
   db-data:
+  grafana-data:
+  waf-db-data:
 
 networks:
   front-tier:
