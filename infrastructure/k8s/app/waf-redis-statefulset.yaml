@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: waf-redis
   labels:
     app: waf-redis
 spec:
+  serviceName: "waf-redis"
   replicas: 1
   selector:
     matchLabels:
@@ -17,8 +18,20 @@ spec:
       containers:
       - name: redis
         image: redis:alpine
+        command: ["redis-server", "--appendonly", "yes"]
         ports:
         - containerPort: 6379
+        volumeMounts:
+        - name: waf-redis-data
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: waf-redis-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
 ---
 apiVersion: v1
 kind: Service

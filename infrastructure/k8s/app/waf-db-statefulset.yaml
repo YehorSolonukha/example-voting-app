@@ -1,10 +1,11 @@
 apiVersion: apps/v1
-kind: Deployment
+kind: StatefulSet
 metadata:
   name: waf-db
   labels:
     app: waf-db
 spec:
+  serviceName: "waf-db"
   replicas: 1
   selector:
     matchLabels:
@@ -29,10 +30,20 @@ spec:
         volumeMounts:
         - name: waf-db-init
           mountPath: /docker-entrypoint-initdb.d
+        - name: waf-db-data
+          mountPath: /var/lib/postgresql/data
       volumes:
       - name: waf-db-init
         configMap:
           name: waf-db-init-scripts
+  volumeClaimTemplates:
+  - metadata:
+      name: waf-db-data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 1Gi
 ---
 apiVersion: v1
 kind: Service
