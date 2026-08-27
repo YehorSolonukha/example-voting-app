@@ -8,6 +8,7 @@ on:
       - 'vote/**'
       - 'result/**'
       - 'worker/**'
+      - 'gateway/**'
       - '.github/workflows/build-push.yml'
 
 jobs:
@@ -27,6 +28,9 @@ jobs:
           - service: worker
             context: ./worker
             image: yehor542/worker
+          - service: gateway
+            context: ./gateway
+            image: yehor542/gateway
 
     steps:
       - name: Checkout repository

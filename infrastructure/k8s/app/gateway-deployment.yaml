@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: gateway
+  labels:
+    app: gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: gateway
+  template:
+    metadata:
+      labels:
+        app: gateway
+    spec:
+      containers:
+      - name: gateway
+        image: yehor542/gateway:latest
+        imagePullPolicy: Always
+        ports:
+        - containerPort: 9090
+        env:
+        # We might not need these env vars if it uses hardcoded hostnames, but it's good practice.
+        # I'll check gateway source code if it uses env vars, but usually they just use the hostname 'waf-db'.
+        - name: WAF_DB_HOST
+          value: waf-db
+        - name: WAF_REDIS_HOST
+          value: waf-redis
+        - name: VOTE_APP_URL
+          value: http://vote
