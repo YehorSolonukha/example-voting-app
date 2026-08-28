@@ -18,3 +18,18 @@ spec:
       - name: worker
         image: yehor542/worker:v1.0
         imagePullPolicy: Always
+        env:
+        - name: REDIS_HOST
+          value: redis-ha-master
+        - name: POSTGRES_HOST
+          value: db-cluster-rw
+        - name: POSTGRES_USER
+          valueFrom:
+            secretKeyRef:
+              name: db-cluster-app
+              key: username
+        - name: POSTGRES_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: db-cluster-app
+              key: password

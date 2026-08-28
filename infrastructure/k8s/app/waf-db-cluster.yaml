@@ -1,0 +1,17 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Cluster
+metadata:
+  name: waf-db-cluster
+spec:
+  instances: 3
+  primaryUpdateStrategy: unsupervised
+  storage:
+    size: 1Gi
+  bootstrap:
+    initdb:
+      database: waf_logs
+      owner: postgres
+      postInitApplicationSQLRefs:
+        configMapRefs:
+          - name: waf-db-init-scripts
+            key: schema.sql

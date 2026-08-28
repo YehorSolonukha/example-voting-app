@@ -20,6 +20,9 @@ spec:
         imagePullPolicy: Always
         ports:
         - containerPort: 80
+        env:
+        - name: REDIS_HOST
+          value: redis-ha-master
         resources:
           requests:
             cpu: 100m

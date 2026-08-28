@@ -21,11 +21,19 @@ spec:
         ports:
         - containerPort: 9090
         env:
-        # We might not need these env vars if it uses hardcoded hostnames, but it's good practice.
-        # I'll check gateway source code if it uses env vars, but usually they just use the hostname 'waf-db'.
         - name: WAF_DB_HOST
-          value: waf-db
+          value: waf-db-cluster-rw
         - name: WAF_REDIS_HOST
-          value: waf-redis
+          value: waf-redis-ha-master
+        - name: WAF_DB_USER
+          valueFrom:
+            secretKeyRef:
+              name: waf-db-cluster-app
+              key: username
+        - name: WAF_DB_PASSWORD
+          valueFrom:
+            secretKeyRef:
+              name: waf-db-cluster-app
+              key: password
         - name: VOTE_APP_URL
           value: http://vote
