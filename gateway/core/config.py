@@ -9,7 +9,7 @@ load_dotenv()
 UPSTREAM_URL = os.getenv("VOTE_SERVICE_URI", "http://vote:80")
 
 # Database connection string for our audit logs
-WAF_DB_URL = os.getenv("WAF_DB_URL", "postgres://postgres:super_secret_password_here@waf-db:5432/waf_logs")
+WAF_DB_URL = os.getenv("WAF_DB_URL", "postgres://postgres:super_secret_password_here@waf-db-cluster-rw:5432/waf_logs")
 
 # Redis connection string for rate limiting
 WAF_REDIS_URL = os.getenv("WAF_REDIS_URL", "redis://waf-redis:6379")
