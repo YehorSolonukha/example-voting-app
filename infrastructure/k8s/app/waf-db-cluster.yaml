@@ -10,7 +10,7 @@ spec:
   bootstrap:
     initdb:
       database: waf_logs
-      owner: postgres
+      owner: app
       postInitApplicationSQLRefs:
         configMapRefs:
           - name: waf-db-init-scripts

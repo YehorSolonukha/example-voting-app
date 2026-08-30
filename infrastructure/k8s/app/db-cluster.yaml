@@ -10,4 +10,4 @@ spec:
   bootstrap:
     initdb:
       database: postgres
-      owner: postgres
+      owner: app
