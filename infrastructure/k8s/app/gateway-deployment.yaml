@@ -21,10 +21,6 @@ spec:
         ports:
         - containerPort: 9090
         env:
-        - name: WAF_DB_HOST
-          value: waf-db-cluster-rw
-        - name: WAF_REDIS_HOST
-          value: waf-redis-ha-master
         - name: WAF_DB_USER
           valueFrom:
             secretKeyRef:
@@ -35,5 +31,9 @@ spec:
             secretKeyRef:
               name: waf-db-cluster-app
               key: password
+        - name: WAF_DB_URL
+          value: postgres://$(WAF_DB_USER):$(WAF_DB_PASSWORD)@waf-db-cluster-rw:5432/waf_logs
+        - name: WAF_REDIS_URL
+          value: redis://waf-redis-ha-master:6379
         - name: VOTE_APP_URL
           value: http://vote
