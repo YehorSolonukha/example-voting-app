@@ -13,8 +13,14 @@ from waf.engine import WAFEngine
 
 app = FastAPI()
 
+from fastapi.responses import Response, RedirectResponse
+
 # Mount the frontend UI (must come before the catch-all proxy route)
-app.mount("/admin", StaticFiles(directory="static", html=True), name="admin")
+app.mount("/admin/", StaticFiles(directory="static", html=True), name="admin")
+
+@app.get("/admin")
+async def admin_redirect():
+    return RedirectResponse(url="/admin/")
 
 # --- DASHBOARD STATE & WEBSOCKETS ---
 class ConnectionManager:
@@ -131,7 +137,7 @@ async def websocket_endpoint(websocket: WebSocket):
 async def proxy(request: Request, path: str):
     
     # Ignore background requests that aren't actually meant for our backend application
-    if path == "favicon.ico" or path.startswith("admin") or path.startswith("api"):
+    if path == "favicon.ico" or path.startswith("admin") or path.startswith("api") or path.startswith("ws"):
         # We just return 404 for them instead of proxying them to the backend 
         return Response(status_code=404)
         
@@ -169,16 +175,18 @@ async def proxy(request: Request, path: str):
     # Read body bytes here so we can forward them
     body_bytes = await request.body()
     
-    # Determine upstream destination based on path
+    # Check the Referer header to see if this request originated from the Result page
+    referer = request.headers.get("referer", "")
+    
+    # Determine upstream destination based on path or referer
     if path == "result" or path.startswith("result/"):
-        # Strip the '/result' prefix when sending to the result app,
-        # e.g. /result -> /, /result/stylesheets/style.css -> /stylesheets/style.css
         target_path = path[len("result"):]
         if target_path.startswith("/"):
             target_path = target_path[1:]
         target_url = f"{RESULT_SERVICE_URI}/{target_path}"
-    elif path.startswith("socket.io"):
-        # The result app uses socket.io, so we route its traffic to the result app
+    elif path.startswith("socket.io") or "result" in referer:
+        # If the path is socket.io OR the browser was on the /result page when it asked for this file (like app.js),
+        # we know it belongs to the Result app!
         target_url = f"{RESULT_SERVICE_URI}/{path}"
     else:
         # Default route to vote app
