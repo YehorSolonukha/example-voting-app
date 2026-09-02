@@ -7,7 +7,7 @@ from pydantic import BaseModel
 import json
 import redis.asyncio as redis
 
-from core.config import UPSTREAM_URL, WAF_DB_URL, WAF_REDIS_URL
+from core.config import UPSTREAM_URL, WAF_DB_URL, WAF_REDIS_URL, RESULT_SERVICE_URI
 from core.rule_config import rule_manager
 from waf.engine import WAFEngine
 
@@ -169,14 +169,30 @@ async def proxy(request: Request, path: str):
     # Read body bytes here so we can forward them
     body_bytes = await request.body()
     
+    # Determine upstream destination based on path
+    if path == "result" or path.startswith("result/"):
+        # Strip the '/result' prefix when sending to the result app,
+        # e.g. /result -> /, /result/stylesheets/style.css -> /stylesheets/style.css
+        target_path = path[len("result"):]
+        if target_path.startswith("/"):
+            target_path = target_path[1:]
+        target_url = f"{RESULT_SERVICE_URI}/{target_path}"
+    elif path.startswith("socket.io"):
+        # The result app uses socket.io, so we route its traffic to the result app
+        target_url = f"{RESULT_SERVICE_URI}/{path}"
+    else:
+        # Default route to vote app
+        target_url = f"{UPSTREAM_URL}/{path}"
+    
     # Forward the request safely
     async with httpx.AsyncClient() as client:
         upstream_response = await client.request(
             method=request.method,
-            url=f"{UPSTREAM_URL}/{path}",
+            url=target_url,
             headers=dict(request.headers),
             content=body_bytes
         )
+
         
     return Response(
         content=upstream_response.content,

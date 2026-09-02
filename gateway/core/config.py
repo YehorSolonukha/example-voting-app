@@ -13,3 +13,6 @@ WAF_DB_URL = os.getenv("WAF_DB_URL", "postgres://postgres:super_secret_password_
 
 # Redis connection string for rate limiting
 WAF_REDIS_URL = os.getenv("WAF_REDIS_URL", "redis://waf-redis:6379")
+
+# URI for the result Node.js application
+RESULT_SERVICE_URI = os.getenv("RESULT_SERVICE_URI", "http://result:80")
