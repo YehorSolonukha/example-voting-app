@@ -1,5 +1,7 @@
+import asyncio
 import httpx
 import asyncpg
+import websockets as ws_lib
 from fastapi import FastAPI, Request, WebSocket
 from fastapi.responses import Response
 from fastapi.staticfiles import StaticFiles
@@ -133,6 +135,42 @@ async def websocket_endpoint(websocket: WebSocket):
         ws_manager.disconnect(websocket)
 # -------------------------------
 
+# Headers that must not be forwarded upstream (hop-by-hop per RFC 7230)
+HOP_BY_HOP = frozenset([
+    "connection", "keep-alive", "proxy-authenticate", "proxy-authorization",
+    "te", "trailers", "transfer-encoding", "upgrade", "host"
+])
+
+@app.websocket("/socket.io/{rest:path}")
+async def proxy_socketio_ws(websocket: WebSocket, rest: str):
+    query = websocket.scope.get("query_string", b"").decode()
+    target = f"ws://result:80/socket.io/{rest}?{query}" if query else f"ws://result:80/socket.io/{rest}"
+
+    await websocket.accept()
+
+    try:
+        async with ws_lib.connect(target) as upstream:
+            async def client_to_upstream():
+                try:
+                    async for msg in websocket.iter_text():
+                        await upstream.send(msg)
+                except Exception:
+                    pass
+
+            async def upstream_to_client():
+                try:
+                    async for msg in upstream:
+                        if isinstance(msg, bytes):
+                            await websocket.send_bytes(msg)
+                        else:
+                            await websocket.send_text(msg)
+                except Exception:
+                    pass
+
+            await asyncio.gather(client_to_upstream(), upstream_to_client())
+    except Exception as e:
+        print(f"[Gateway] WebSocket proxy error: {e}")
+
 @app.api_route("/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def proxy(request: Request, path: str):
     
@@ -196,12 +234,15 @@ async def proxy(request: Request, path: str):
     if query_string:
         target_url = f"{target_url}?{query_string}"
     
+    # Strip hop-by-hop headers before forwarding upstream
+    forward_headers = {k: v for k, v in request.headers.items() if k.lower() not in HOP_BY_HOP}
+
     # Forward the request safely
     async with httpx.AsyncClient() as client:
         upstream_response = await client.request(
             method=request.method,
             url=target_url,
-            headers=dict(request.headers),
+            headers=forward_headers,
             content=body_bytes
         )
 
