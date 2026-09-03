@@ -191,6 +191,10 @@ async def proxy(request: Request, path: str):
     else:
         # Default route to vote app
         target_url = f"{UPSTREAM_URL}/{path}"
+
+    query_string = request.url.query
+    if query_string:
+        target_url = f"{target_url}?{query_string}"
     
     # Forward the request safely
     async with httpx.AsyncClient() as client:

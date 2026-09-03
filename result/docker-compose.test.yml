@@ -44,7 +44,7 @@ services:
     networks:
       - back-tier
 
-  db:
+  db-cluster-rw:
     image: postgres:9.4
     environment:
       POSTGRES_USER: "postgres"
