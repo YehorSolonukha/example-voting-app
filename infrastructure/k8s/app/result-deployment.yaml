@@ -17,9 +17,9 @@ spec:
       containers:
       - name: result
         image: yehor542/result_app
-        imagePullPolicy: Always       # Wymusza pobieranie przy rolling restartach
+        imagePullPolicy: Always
         ports:
-        - containerPort: 4000
+        - containerPort: 80
         env:
         - name: POSTGRES_HOST
           value: db-cluster-rw
