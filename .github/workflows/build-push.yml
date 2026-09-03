@@ -8,7 +8,8 @@ on:
       - 'vote/**'
       - 'result/**'
       - 'worker/**'
-      - 'gateway/**'
+      - 'waf/**'
+      - 'proxy/**'
       - '.github/workflows/build-push.yml'
 
 jobs:
@@ -28,9 +29,12 @@ jobs:
           - service: worker
             context: ./worker
             image: yehor542/worker
-          - service: gateway
-            context: ./gateway
-            image: yehor542/gateway
+          - service: waf
+            context: ./waf
+            image: yehor542/waf
+          - service: proxy
+            context: ./proxy
+            image: yehor542/proxy
 
     steps:
       - name: Checkout repository

@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WAF Dashboard</title>
+    <!-- Modern Typography: Google Fonts 'Outfit' -->
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <!-- FontAwesome Icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <!-- Glassmorphic Sidebar -->
+    <nav class="sidebar glass-panel fade-in-left">
+        <div class="brand">
+            <h2>WAF</h2>
+        </div>
+        <ul class="nav-links">
+            <li class="active" data-tab="overview"><i class="fa-solid fa-chart-pie"></i> Overview</li>
+            <li data-tab="rules"><i class="fa-solid fa-sliders"></i> Security Rules</li>
+            <li data-tab="live-feed"><i class="fa-solid fa-satellite-dish"></i> Live Threat Feed</li>
+        </ul>
+    </nav>
+
+    <main class="content">
+        <!-- Overview Tab -->
+        <section id="overview" class="tab-content active">
+            <header>
+                <h1>Security Overview</h1>
+                <p>Real-time analytics and traffic metrics.</p>
+            </header>
+            
+            <div class="stats-grid">
+                <div class="stat-card glass-panel fade-in delay-1">
+                    <div class="stat-icon blue"><i class="fa-solid fa-server"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Requests</h3>
+                        <p id="stat-total-requests">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass-panel fade-in delay-2">
+                    <div class="stat-icon red"><i class="fa-solid fa-hand"></i></div>
+                    <div class="stat-info">
+                        <h3>Total Blocked</h3>
+                        <p id="stat-total-blocked">0</p>
+                    </div>
+                </div>
+                
+                <div class="stat-card glass-panel fade-in delay-3">
+                    <div class="stat-icon green"><i class="fa-solid fa-check-double"></i></div>
+                    <div class="stat-info">
+                        <h3>Allowed</h3>
+                        <p id="stat-total-allowed">0</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="charts-container fade-in delay-4">
+                <div class="chart-card glass-panel">
+                    <h2>Rules Fired Breakdown</h2>
+                    <div class="chart-wrapper">
+                        <canvas id="rulesChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Rules Tab -->
+        <section id="rules" class="tab-content">
+            <header>
+                <h1>Rule Configuration</h1>
+                <p>Dynamically enable, disable, and modify WAF engine rules.</p>
+            </header>
+            <div id="rules-container" class="rules-grid">
+                <!-- Rules dynamically injected here -->
+            </div>
+        </section>
+
+        <!-- Live Feed Tab -->
+        <section id="live-feed" class="tab-content">
+            <header>
+                <h1>Live Threat Feed <span class="live-badge"><i class="fa-solid fa-circle"></i> LIVE</span></h1>
+                <p>Real-time stream of intercepted attacks via WebSockets.</p>
+            </header>
+            
+            <div class="feed-container glass-panel fade-in delay-1">
+                <div class="feed-header">
+                    <span>Timestamp</span>
+                    <span>Client IP</span>
+                    <span>Rule</span>
+                    <span>Target</span>
+                    <span>Reason</span>
+                </div>
+                <div id="feed-list" class="feed-list">
+                    <!-- Feed items injected here -->
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Chart.js -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

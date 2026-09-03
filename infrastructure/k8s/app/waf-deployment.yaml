@@ -1,23 +1,23 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: gateway
+  name: waf
   labels:
-    app: gateway
+    app: waf
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: gateway
+      app: waf
   template:
     metadata:
       labels:
-        app: gateway
+        app: waf
     spec:
       containers:
-      - name: gateway
-        image: yehor542/gateway:latest
-        imagePullPolicy: Always
+      - name: waf
+        image: yehor542/waf:latest
+        imagePullPolicy: IfNotPresent
         ports:
         - containerPort: 9090
         env:
@@ -32,8 +32,8 @@ spec:
               name: waf-db-cluster-app
               key: password
         - name: WAF_DB_URL
-          value: postgres://$(WAF_DB_USER):$(WAF_DB_PASSWORD)@waf-db-cluster-rw:5432/waf_logs
+          value: "postgres://$(WAF_DB_USER):$(WAF_DB_PASSWORD)@waf-db-cluster-rw:5432/waf_logs"
         - name: WAF_REDIS_URL
-          value: redis://waf-redis-ha-master:6379
-        - name: VOTE_APP_URL
-          value: http://vote
+          value: "redis://waf-redis-ha-master:6379"
+        - name: PROXY_URL
+          value: "http://proxy:9091"

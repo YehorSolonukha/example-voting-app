@@ -71,8 +71,12 @@ services:
       POSTGRES_DB: "waf_logs"
     volumes:
       - "waf-db-data:/var/lib/postgresql/data"
-      # This mounts our schema into the exact folder Postgres checks on first boot
-      - "./gateway/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+      - "./waf/schema.sql:/docker-entrypoint-initdb.d/schema.sql"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres"]
+      interval: "5s"
+      timeout: "5s"
+      retries: 5
     networks:
       - front-tier
 
@@ -81,14 +85,31 @@ services:
     networks:
       - front-tier
 
-  gateway:
-    build: ./gateway/
+  # ─── Gateway: WAF + Proxy ──────────────────────────────────────────────────
+
+  # proxy: internal routing service — NOT exposed to the outside world.
+  # Only the WAF can reach it (via Docker's internal network).
+  proxy:
+    build: ./proxy/
+    depends_on:
+      - vote
+      - result
+    networks:
+      - front-tier
+
+  # waf: public entry point — the only service exposed on the host.
+  # Inspects all traffic and forwards clean requests to the proxy.
+  waf:
+    build: ./waf/
     ports:
       - "9090:9090"
     depends_on:
-      - vote
-      - waf-db
-      - waf-redis
+      waf-db:
+        condition: service_healthy
+      waf-redis:
+        condition: service_started
+      proxy:
+        condition: service_started
     networks:
       - front-tier
 
