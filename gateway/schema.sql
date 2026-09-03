@@ -22,7 +22,7 @@ VALUES
     ('UserAgentRule', true, '{"bad_agents": ["curl", "python-requests", "bot", "spider", "sqlmap"]}'::jsonb),
     ('SqlInjectionRule', true, '{"patterns": ["drop\\s+table", "union\\s+select", "or\\s+1\\s*=\\s*1", "--"]}'::jsonb),
     ('IPBlocklistRule', true, '{}'::jsonb),
-    ('TimeAccessRule', true, '{"start_hour": 8, "end_hour": 20}'::jsonb),
+    ('TimeAccessRule', true, '{"start_hour": 2, "end_hour": 1}'::jsonb),
     ('RateLimitRule', true, '{"max_requests": 50, "window_seconds": 10}'::jsonb),
     ('GeoBlockRule', true, '{"blocked_countries": ["RU", "CN", "KP"]}'::jsonb)
 ON CONFLICT (rule_name) DO NOTHING;
