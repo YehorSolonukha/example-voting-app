@@ -16,7 +16,7 @@ spec:
     spec:
       containers:
       - name: result
-        image: yehor542/result_app
+        image: yehor542/result:latest
         imagePullPolicy: Always
         ports:
         - containerPort: 80
