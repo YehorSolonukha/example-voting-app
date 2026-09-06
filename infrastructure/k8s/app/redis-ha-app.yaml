@@ -19,11 +19,11 @@ spec:
           enabled: false
         master:
           persistence:
-            size: 1Gi
+            enabled: false
         replica:
           replicaCount: 2
           persistence:
-            size: 1Gi
+            enabled: false
   destination:
     server: https://kubernetes.default.svc
     namespace: default
