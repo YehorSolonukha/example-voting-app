@@ -11,3 +11,7 @@ spec:
     initdb:
       database: postgres
       owner: app
+      postInitApplicationSQLRefs:
+        configMapRefs:
+          - name: db-init-scripts
+            key: schema.sql

@@ -1,0 +1,11 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: db-init-scripts
+  namespace: default
+  labels:
+    app: db
+data:
+  schema.sql: |
+    -- Grant permissions to the app user so it can create tables in the public schema (Postgres 15+ requirement)
+    GRANT ALL ON SCHEMA public TO app;
