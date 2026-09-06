@@ -36,3 +36,6 @@ data:
         ('GeoBlockRule',     true, '{"blocked_countries": ["RU", "CN", "KP"]}'::jsonb)
     ON CONFLICT (rule_name) DO NOTHING;
     
+    -- Grant permissions to the app user so it can read/write to the tables created by superuser
+    GRANT ALL PRIVILEGES ON ALL TABLES IN SCHEMA public TO app;
+    GRANT ALL PRIVILEGES ON ALL SEQUENCES IN SCHEMA public TO app;
