@@ -5,6 +5,9 @@
 # [ ] Monitor Grafana CPU metrics and Pod count
 
 TARGET_URL=${1:-"http://20.215.182.22:9090/"}
+if [[ ! "$TARGET_URL" =~ ^https?:// ]]; then
+    TARGET_URL="http://$TARGET_URL"
+fi
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 
 echo "Starting autoscaling load test using k6..."
