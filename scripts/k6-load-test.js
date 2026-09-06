@@ -2,7 +2,7 @@ import http from 'k6/http';
 import { check, sleep } from 'k6';
 
 // Read target URL from environment or default to localhost
-const targetUrl = __ENV.TARGET_URL || 'http://20.215.182.22:9090/';
+const targetUrl = __ENV.TARGET_URL || 'http://134.112.6.149:9090/';
 
 export const options = {
   stages: [
