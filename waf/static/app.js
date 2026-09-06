@@ -17,10 +17,10 @@ async function loadStats() {
         const res = await fetch('/api/stats');
         const data = await res.json();
         
-        // Update number widgets using a smooth numerical counting animation
-        animateValue('stat-total-requests', parseInt(document.getElementById('stat-total-requests').innerText) || 0, data.total_requests, 1000);
-        animateValue('stat-total-blocked', parseInt(document.getElementById('stat-total-blocked').innerText) || 0, data.blocked_requests, 1000);
-        animateValue('stat-total-allowed', parseInt(document.getElementById('stat-total-allowed').innerText) || 0, data.total_requests - data.blocked_requests, 1000);
+        // Update number widgets instantly
+        document.getElementById('stat-total-requests').innerHTML = data.total_requests;
+        document.getElementById('stat-total-blocked').innerHTML = data.blocked_requests;
+        document.getElementById('stat-total-allowed').innerHTML = data.total_requests - data.blocked_requests;
         
         // Update Chart.js Doughnut Chart
         const labels = Object.keys(data.rule_breakdown);
@@ -58,23 +58,7 @@ async function loadStats() {
     } catch (e) { console.error("Failed to load stats", e); }
 }
 
-// Helper to animate numbers counting up
-function animateValue(id, start, end, duration) {
-    if (start === end) return;
-    let range = end - start;
-    let current = start;
-    let increment = end > start ? 1 : -1;
-    let stepTime = Math.abs(Math.floor(duration / range));
-    if (stepTime < 1) stepTime = 1;
-    let obj = document.getElementById(id);
-    let timer = setInterval(function() {
-        current += increment;
-        obj.innerHTML = current;
-        if (current == end) {
-            clearInterval(timer);
-        }
-    }, stepTime);
-}
+
 
 // Fetch Rules and build the configuration cards dynamically
 async function loadRules() {
