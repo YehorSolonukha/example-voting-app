@@ -1,6 +1,6 @@
 services:
 
-  # ─── Application services ──────────────────────────────────────────────────
+  # ─── Aplikacje ──────────────────────────────────────────────────
 
   vote:
     build:
@@ -37,7 +37,7 @@ services:
     networks:
       - back-tier
 
-  # ─── Infrastructure ────────────────────────────────────────────────────────
+  # ─── Bazy Danych ────────────────────────────────────────────────────────
 
   redis:
     image: redis:alpine
@@ -85,10 +85,7 @@ services:
     networks:
       - front-tier
 
-  # ─── Gateway: WAF + Proxy ──────────────────────────────────────────────────
-
-  # proxy: internal routing service — NOT exposed to the outside world.
-  # Only the WAF can reach it (via Docker's internal network).
+  # ─── WAF + Proxy ──────────────────────────────────────────────────
   proxy:
     build: ./proxy/
     depends_on:
@@ -97,8 +94,6 @@ services:
     networks:
       - front-tier
 
-  # waf: public entry point — the only service exposed on the host.
-  # Inspects all traffic and forwards clean requests to the proxy.
   waf:
     build: ./waf/
     ports:

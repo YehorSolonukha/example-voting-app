@@ -5,7 +5,7 @@ metadata:
   labels:
     app: waf
 spec:
-  type: NodePort
+  type: LoadBalancer
   ports:
   - port: 9090
     targetPort: 9090

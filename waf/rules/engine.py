@@ -21,6 +21,7 @@ class WAFEngine:
     """
 
     def __init__(self):
+        # rejestracja aktywnych reguł bezpieczeństwa
         self.rules: list[WAFRule] = [
             IPBlocklistRule(),
             RateLimitRule(),
